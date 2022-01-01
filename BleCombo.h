@@ -151,8 +151,8 @@ private:
   void delay_ms(uint64_t ms);
   void mouseButtons(uint8_t b);
 
-  uint16_t vid       = 0x05ac;
-  uint16_t pid       = 0x820a;
+  uint16_t vid       = 0xe502;
+  uint16_t pid       = 0xa111;
   uint16_t version   = 0x0210;
 
 public:
