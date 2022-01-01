@@ -134,8 +134,9 @@ static const uint8_t _hidReportDescriptor[] = {
   END_COLLECTION(0)          // END_COLLECTION
 };
 
-BleCombo::BleCombo(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel) 
+BleCombo::BleCombo(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel)
     : hid(0)
+		, _mouseButtons(0)
     , deviceName(std::string(deviceName).substr(0, 15))
     , deviceManufacturer(std::string(deviceManufacturer).substr(0,15))
     , batteryLevel(batteryLevel) {}
@@ -537,6 +538,55 @@ size_t BleCombo::write(const uint8_t *buffer, size_t size) {
 		buffer++;
 	}
 	return n;
+}
+
+void BleCombo::mouseClick(uint8_t b)
+{
+  _mouseButtons = b;
+  move(0, 0, 0, 0);
+  _mouseButtons = 0;
+  move(0, 0, 0, 0);
+}
+
+void BleCombo::mouseMove(signed char x, signed char y, signed char wheel, signed char hWheel)
+{
+  if (this->isConnected())
+	{
+    uint8_t m[5];
+    m[0] = _mouseButtons;
+    m[1] = x;
+    m[2] = y;
+    m[3] = wheel;
+    m[4] = hWheel;
+    this->inputMouse->setValue(m, 5);
+    this->inputMouse->notify();
+  }
+}
+
+void BleCombo::mouseButtons(uint8_t b)
+{
+  if (b != _mouseButtons)
+	{
+    _mouseButtons = b;
+    move(0, 0, 0, 0);
+  }
+}
+
+void BleCombo::mousePress(uint8_t b)
+{
+  mouseButtons(_mouseButtons | b);
+}
+
+void BleCombo::mouseRelease(uint8_t b)
+{
+  mouseButtons(_mouseButtons & ~b);
+}
+
+bool BleCombo::mouseIsPressed(uint8_t b)
+{
+  if ((b & _mouseButtons) > 0)
+    return true;
+  return false;
 }
 
 void BleCombo::onConnect(BLEServer* pServer) {

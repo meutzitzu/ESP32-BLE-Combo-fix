@@ -116,6 +116,12 @@ const MediaKeyReport KEY_MEDIA_WWW_BACK = {0, 32};
 const MediaKeyReport KEY_MEDIA_CONSUMER_CONTROL_CONFIGURATION = {0, 64}; // Media Selection
 const MediaKeyReport KEY_MEDIA_EMAIL_READER = {0, 128};
 
+#define MOUSE_LEFT 1
+#define MOUSE_RIGHT 2
+#define MOUSE_MIDDLE 4
+#define MOUSE_BACK 8
+#define MOUSE_FORWARD 16
+#define MOUSE_ALL (MOUSE_LEFT | MOUSE_RIGHT | MOUSE_MIDDLE) #For compatibility with the Mouse library
 
 //  Low level key report: up to 6 keys and shift, ctrl etc at once
 typedef struct
@@ -128,6 +134,7 @@ typedef struct
 class BleCombo : public Print, public BLEServerCallbacks, public BLECharacteristicCallbacks
 {
 private:
+  uint8_t _mouseButtons;
   BLEHIDDevice* hid;
   BLECharacteristic* inputKeyboard;
   BLECharacteristic* outputKeyboard;
@@ -142,6 +149,7 @@ private:
   bool               connected = false;
   uint32_t           _delay_ms = 7;
   void delay_ms(uint64_t ms);
+  void mouseButtons(uint8_t b);
 
   uint16_t vid       = 0x05ac;
   uint16_t pid       = 0x820a;
@@ -165,6 +173,11 @@ public:
   void setBatteryLevel(uint8_t level);
   void setName(std::string deviceName);  
   void setDelay(uint32_t ms);
+  void mouseClick(uint8_t b = MOUSE_LEFT);
+  void mouseMove(signed char x, signed char y, signed char wheel = 0, signed char hWheel = 0);
+  void mousePress(uint8_t b = MOUSE_LEFT);      // press LEFT by default
+  void mouseRelease(uint8_t b = MOUSE_LEFT);    // release LEFT by default
+  bool mouseIsPressed(uint8_t b = MOUSE_LEFT);  // check LEFT by default
 
   void set_vendor_id(uint16_t vid);
   void set_product_id(uint16_t pid);
