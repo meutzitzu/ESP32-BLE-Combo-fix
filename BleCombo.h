@@ -140,6 +140,7 @@ private:
   BLECharacteristic* outputKeyboard;
   BLECharacteristic* inputMediaKeys;
   BLECharacteristic* inputMouse;
+  BLECharacteristic* outputMouse;
   BLEAdvertising*    advertising;
   KeyReport          _keyReport;
   MediaKeyReport     _mediaKeyReport;
