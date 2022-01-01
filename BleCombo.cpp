@@ -14,7 +14,7 @@
 #include <driver/adc.h>
 #include "sdkconfig.h"
 
-#include "BleKeyboard.h"
+#include "BleCombo.h"
 
 #if defined(CONFIG_ARDUHAL_ESP_LOG)
   #include "esp32-hal-log.h"
@@ -28,6 +28,7 @@
 // Report IDs:
 #define KEYBOARD_ID 0x01
 #define MEDIA_KEYS_ID 0x02
+#define MOUSE 0x03
 
 static const uint8_t _hidReportDescriptor[] = {
   USAGE_PAGE(1),      0x01,          // USAGE_PAGE (Generic Desktop Ctrls)
@@ -91,16 +92,55 @@ static const uint8_t _hidReportDescriptor[] = {
   USAGE(2),           0x83, 0x01,    //   Usage (Media sel)   ; bit 6: 64
   USAGE(2),           0x8A, 0x01,    //   Usage (Mail)        ; bit 7: 128
   HIDINPUT(1),        0x02,          //   INPUT (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
-  END_COLLECTION(0)                  // END_COLLECTION
+  END_COLLECTION(0),                 // END_COLLECTION
+  // ------------------------------------------------- Mouse
+  USAGE_PAGE(1),       0x01, // USAGE_PAGE (Generic Desktop)
+  USAGE(1),            0x02, // USAGE (Mouse)
+  COLLECTION(1),       0x01, // COLLECTION (Application)
+  USAGE(1),            0x01, //   USAGE (Pointer)
+  COLLECTION(1),       0x00, //   COLLECTION (Physical)
+  // ------------------------------------------------- Buttons (Left, Right, Middle, Back, Forward)
+  USAGE_PAGE(1),       0x09, //     USAGE_PAGE (Button)
+  USAGE_MINIMUM(1),    0x01, //     USAGE_MINIMUM (Button 1)
+  USAGE_MAXIMUM(1),    0x05, //     USAGE_MAXIMUM (Button 5)
+  LOGICAL_MINIMUM(1),  0x00, //     LOGICAL_MINIMUM (0)
+  LOGICAL_MAXIMUM(1),  0x01, //     LOGICAL_MAXIMUM (1)
+  REPORT_SIZE(1),      0x01, //     REPORT_SIZE (1)
+  REPORT_COUNT(1),     0x05, //     REPORT_COUNT (5)
+  HIDINPUT(1),         0x02, //     INPUT (Data, Variable, Absolute) ;5 button bits
+  // ------------------------------------------------- Padding
+  REPORT_SIZE(1),      0x03, //     REPORT_SIZE (3)
+  REPORT_COUNT(1),     0x01, //     REPORT_COUNT (1)
+  HIDINPUT(1),         0x03, //     INPUT (Constant, Variable, Absolute) ;3 bit padding
+  // ------------------------------------------------- X/Y position, Wheel
+  USAGE_PAGE(1),       0x01, //     USAGE_PAGE (Generic Desktop)
+  USAGE(1),            0x30, //     USAGE (X)
+  USAGE(1),            0x31, //     USAGE (Y)
+  USAGE(1),            0x38, //     USAGE (Wheel)
+  LOGICAL_MINIMUM(1),  0x81, //     LOGICAL_MINIMUM (-127)
+  LOGICAL_MAXIMUM(1),  0x7f, //     LOGICAL_MAXIMUM (127)
+  REPORT_SIZE(1),      0x08, //     REPORT_SIZE (8)
+  REPORT_COUNT(1),     0x03, //     REPORT_COUNT (3)
+  HIDINPUT(1),         0x06, //     INPUT (Data, Variable, Relative) ;3 bytes (X,Y,Wheel)
+  // ------------------------------------------------- Horizontal wheel
+  USAGE_PAGE(1),       0x0c, //     USAGE PAGE (Consumer Devices)
+  USAGE(2),      0x38, 0x02, //     USAGE (AC Pan)
+  LOGICAL_MINIMUM(1),  0x81, //     LOGICAL_MINIMUM (-127)
+  LOGICAL_MAXIMUM(1),  0x7f, //     LOGICAL_MAXIMUM (127)
+  REPORT_SIZE(1),      0x08, //     REPORT_SIZE (8)
+  REPORT_COUNT(1),     0x01, //     REPORT_COUNT (1)
+  HIDINPUT(1),         0x06, //     INPUT (Data, Var, Rel)
+  END_COLLECTION(0),         //   END_COLLECTION
+  END_COLLECTION(0)          // END_COLLECTION
 };
 
-BleKeyboard::BleKeyboard(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel) 
+BleCombo::BleCombo(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel) 
     : hid(0)
     , deviceName(std::string(deviceName).substr(0, 15))
     , deviceManufacturer(std::string(deviceManufacturer).substr(0,15))
     , batteryLevel(batteryLevel) {}
 
-void BleKeyboard::begin(void)
+void BleCombo::begin(void)
 {
   BLEDevice::init(deviceName);
   BLEServer* pServer = BLEDevice::createServer();
@@ -110,6 +150,7 @@ void BleKeyboard::begin(void)
   inputKeyboard = hid->inputReport(KEYBOARD_ID);  // <-- input REPORTID from report map
   outputKeyboard = hid->outputReport(KEYBOARD_ID);
   inputMediaKeys = hid->inputReport(MEDIA_KEYS_ID);
+  inputMouse = hid->inputReport(MOUSE);
 
   outputKeyboard->setCallbacks(this);
 
@@ -145,22 +186,22 @@ void BleKeyboard::begin(void)
   ESP_LOGD(LOG_TAG, "Advertising started!");
 }
 
-void BleKeyboard::end(void)
+void BleCombo::end(void)
 {
 }
 
-bool BleKeyboard::isConnected(void) {
+bool BleCombo::isConnected(void) {
   return this->connected;
 }
 
-void BleKeyboard::setBatteryLevel(uint8_t level) {
+void BleCombo::setBatteryLevel(uint8_t level) {
   this->batteryLevel = level;
   if (hid != 0)
     this->hid->setBatteryLevel(this->batteryLevel);
 }
 
 //must be called before begin in order to set the name
-void BleKeyboard::setName(std::string deviceName) {
+void BleCombo::setName(std::string deviceName) {
   this->deviceName = deviceName;
 }
 
@@ -169,23 +210,23 @@ void BleKeyboard::setName(std::string deviceName) {
  * 
  * @param ms Time in milliseconds
  */
-void BleKeyboard::setDelay(uint32_t ms) {
+void BleCombo::setDelay(uint32_t ms) {
   this->_delay_ms = ms;
 }
 
-void BleKeyboard::set_vendor_id(uint16_t vid) { 
+void BleCombo::set_vendor_id(uint16_t vid) { 
 	this->vid = vid; 
 }
 
-void BleKeyboard::set_product_id(uint16_t pid) { 
+void BleCombo::set_product_id(uint16_t pid) { 
 	this->pid = pid; 
 }
 
-void BleKeyboard::set_version(uint16_t version) { 
+void BleCombo::set_version(uint16_t version) { 
 	this->version = version; 
 }
 
-void BleKeyboard::sendReport(KeyReport* keys)
+void BleCombo::sendReport(KeyReport* keys)
 {
   if (this->isConnected())
   {
@@ -198,7 +239,7 @@ void BleKeyboard::sendReport(KeyReport* keys)
   }	
 }
 
-void BleKeyboard::sendReport(MediaKeyReport* keys)
+void BleCombo::sendReport(MediaKeyReport* keys)
 {
   if (this->isConnected())
   {
@@ -355,7 +396,7 @@ uint8_t USBPutChar(uint8_t c);
 // to the persistent key report and sends the report.  Because of the way
 // USB HID works, the host acts like the key remains pressed until we
 // call release(), releaseAll(), or otherwise clear the report and resend.
-size_t BleKeyboard::press(uint8_t k)
+size_t BleCombo::press(uint8_t k)
 {
 	uint8_t i;
 	if (k >= 136) {			// it's a non-printing key (not a modifier)
@@ -396,7 +437,7 @@ size_t BleKeyboard::press(uint8_t k)
 	return 1;
 }
 
-size_t BleKeyboard::press(const MediaKeyReport k)
+size_t BleCombo::press(const MediaKeyReport k)
 {
     uint16_t k_16 = k[1] | (k[0] << 8);
     uint16_t mediaKeyReport_16 = _mediaKeyReport[1] | (_mediaKeyReport[0] << 8);
@@ -412,7 +453,7 @@ size_t BleKeyboard::press(const MediaKeyReport k)
 // release() takes the specified key out of the persistent key report and
 // sends the report.  This tells the OS the key is no longer pressed and that
 // it shouldn't be repeated any more.
-size_t BleKeyboard::release(uint8_t k)
+size_t BleCombo::release(uint8_t k)
 {
 	uint8_t i;
 	if (k >= 136) {			// it's a non-printing key (not a modifier)
@@ -443,7 +484,7 @@ size_t BleKeyboard::release(uint8_t k)
 	return 1;
 }
 
-size_t BleKeyboard::release(const MediaKeyReport k)
+size_t BleCombo::release(const MediaKeyReport k)
 {
     uint16_t k_16 = k[1] | (k[0] << 8);
     uint16_t mediaKeyReport_16 = _mediaKeyReport[1] | (_mediaKeyReport[0] << 8);
@@ -455,7 +496,7 @@ size_t BleKeyboard::release(const MediaKeyReport k)
 	return 1;
 }
 
-void BleKeyboard::releaseAll(void)
+void BleCombo::releaseAll(void)
 {
 	_keyReport.keys[0] = 0;
 	_keyReport.keys[1] = 0;
@@ -469,21 +510,21 @@ void BleKeyboard::releaseAll(void)
 	sendReport(&_keyReport);
 }
 
-size_t BleKeyboard::write(uint8_t c)
+size_t BleCombo::write(uint8_t c)
 {
 	uint8_t p = press(c);  // Keydown
 	release(c);            // Keyup
 	return p;              // just return the result of press() since release() almost always returns 1
 }
 
-size_t BleKeyboard::write(const MediaKeyReport c)
+size_t BleCombo::write(const MediaKeyReport c)
 {
 	uint16_t p = press(c);  // Keydown
 	release(c);            // Keyup
 	return p;              // just return the result of press() since release() almost always returns 1
 }
 
-size_t BleKeyboard::write(const uint8_t *buffer, size_t size) {
+size_t BleCombo::write(const uint8_t *buffer, size_t size) {
 	size_t n = 0;
 	while (size--) {
 		if (*buffer != '\r') {
@@ -498,7 +539,7 @@ size_t BleKeyboard::write(const uint8_t *buffer, size_t size) {
 	return n;
 }
 
-void BleKeyboard::onConnect(BLEServer* pServer) {
+void BleCombo::onConnect(BLEServer* pServer) {
   this->connected = true;
 
 #if !defined(USE_NIMBLE)
@@ -512,7 +553,7 @@ void BleKeyboard::onConnect(BLEServer* pServer) {
 
 }
 
-void BleKeyboard::onDisconnect(BLEServer* pServer) {
+void BleCombo::onDisconnect(BLEServer* pServer) {
   this->connected = false;
 
 #if !defined(USE_NIMBLE)
@@ -527,13 +568,13 @@ void BleKeyboard::onDisconnect(BLEServer* pServer) {
 #endif // !USE_NIMBLE
 }
 
-void BleKeyboard::onWrite(BLECharacteristic* me) {
+void BleCombo::onWrite(BLECharacteristic* me) {
   uint8_t* value = (uint8_t*)(me->getValue().c_str());
   (void)value;
   ESP_LOGI(LOG_TAG, "special keys: %d", *value);
 }
 
-void BleKeyboard::delay_ms(uint64_t ms) {
+void BleCombo::delay_ms(uint64_t ms) {
   uint64_t m = esp_timer_get_time();
   if(ms){
     uint64_t e = (m + (ms * 1000));

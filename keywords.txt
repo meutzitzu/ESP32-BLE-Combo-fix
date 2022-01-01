@@ -4,7 +4,7 @@
 # Class
 #######################################
 
-BleKeyboard	KEYWORD1
+BleCombo	KEYWORD1
 
 #######################################
 # Methods and Functions

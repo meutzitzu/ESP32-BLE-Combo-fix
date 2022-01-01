@@ -125,13 +125,14 @@ typedef struct
   uint8_t keys[6];
 } KeyReport;
 
-class BleKeyboard : public Print, public BLEServerCallbacks, public BLECharacteristicCallbacks
+class BleCombo : public Print, public BLEServerCallbacks, public BLECharacteristicCallbacks
 {
 private:
   BLEHIDDevice* hid;
   BLECharacteristic* inputKeyboard;
   BLECharacteristic* outputKeyboard;
   BLECharacteristic* inputMediaKeys;
+  BLECharacteristic* inputMouse;
   BLEAdvertising*    advertising;
   KeyReport          _keyReport;
   MediaKeyReport     _mediaKeyReport;
@@ -147,7 +148,7 @@ private:
   uint16_t version   = 0x0210;
 
 public:
-  BleKeyboard(std::string deviceName = "ESP32 Keyboard", std::string deviceManufacturer = "Espressif", uint8_t batteryLevel = 100);
+  BleCombo(std::string deviceName = "ESP32 Keyboard", std::string deviceManufacturer = "Espressif", uint8_t batteryLevel = 100);
   void begin(void);
   void end(void);
   void sendReport(KeyReport* keys);

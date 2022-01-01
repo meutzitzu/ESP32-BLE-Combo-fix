@@ -32,39 +32,39 @@ You might also be interested in:
 /**
  * This example turns the ESP32 into a Bluetooth LE keyboard that writes the words, presses Enter, presses a media key and then Ctrl+Alt+Delete
  */
-#include <BleKeyboard.h>
+#include <BleCombo.h>
 
-BleKeyboard bleKeyboard;
+BleCombo BleCombo;
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
-  bleKeyboard.begin();
+  BleCombo.begin();
 }
 
 void loop() {
-  if(bleKeyboard.isConnected()) {
+  if(BleCombo.isConnected()) {
     Serial.println("Sending 'Hello world'...");
-    bleKeyboard.print("Hello world");
+    BleCombo.print("Hello world");
 
     delay(1000);
 
     Serial.println("Sending Enter key...");
-    bleKeyboard.write(KEY_RETURN);
+    BleCombo.write(KEY_RETURN);
 
     delay(1000);
 
     Serial.println("Sending Play/Pause media key...");
-    bleKeyboard.write(KEY_MEDIA_PLAY_PAUSE);
+    BleCombo.write(KEY_MEDIA_PLAY_PAUSE);
 
     delay(1000);
 
     Serial.println("Sending Ctrl+Alt+Delete...");
-    bleKeyboard.press(KEY_LEFT_CTRL);
-    bleKeyboard.press(KEY_LEFT_ALT);
-    bleKeyboard.press(KEY_DELETE);
+    BleCombo.press(KEY_LEFT_CTRL);
+    BleCombo.press(KEY_LEFT_ALT);
+    BleCombo.press(KEY_DELETE);
     delay(100);
-    bleKeyboard.releaseAll();
+    BleCombo.releaseAll();
 
   }
   Serial.println("Waiting 5 seconds...");
@@ -73,13 +73,13 @@ void loop() {
 ```
 
 ## API docs
-The BleKeyboard interface is almost identical to the Keyboard Interface, so you can use documentation right here:
+The BleCombo interface is almost identical to the Keyboard Interface, so you can use documentation right here:
 https://www.arduino.cc/reference/en/language/functions/usb/keyboard/
 
-Just remember that you have to use `bleKeyboard` instead of just `Keyboard` and you need these two lines at the top of your script:
+Just remember that you have to use `BleCombo` instead of just `Keyboard` and you need these two lines at the top of your script:
 ```
-#include <BleKeyboard.h>
-BleKeyboard bleKeyboard;
+#include <BleCombo.h>
+BleCombo BleCombo;
 ```
 
 In addition to that you can send media keys (which is not possible with the USB keyboard library). Supported are the following:
@@ -101,10 +101,10 @@ In addition to that you can send media keys (which is not possible with the USB 
 - KEY_MEDIA_EMAIL_READER
 
 There is also Bluetooth specific information that you can set (optional):
-Instead of `BleKeyboard bleKeyboard;` you can do `BleKeyboard bleKeyboard("Bluetooth Device Name", "Bluetooth Device Manufacturer", 100);`. (Max lenght is 15 characters, anything beyond that will be truncated.)  
-The third parameter is the initial battery level of your device. To adjust the battery level later on you can simply call e.g.  `bleKeyboard.setBatteryLevel(50)` (set battery level to 50%).  
+Instead of `BleCombo BleCombo;` you can do `BleCombo BleCombo("Bluetooth Device Name", "Bluetooth Device Manufacturer", 100);`. (Max lenght is 15 characters, anything beyond that will be truncated.)  
+The third parameter is the initial battery level of your device. To adjust the battery level later on you can simply call e.g.  `BleCombo.setBatteryLevel(50)` (set battery level to 50%).  
 By default the battery level will be set to 100%, the device name will be `ESP32 Bluetooth Keyboard` and the manufacturer will be `Espressif`.  
-There is also a `setDelay` method to set a delay between each key event. E.g. `bleKeyboard.setDelay(10)` (10 milliseconds). The default is `8`.  
+There is also a `setDelay` method to set a delay between each key event. E.g. `BleCombo.setDelay(10)` (10 milliseconds). The default is `8`.  
 This feature is meant to compensate for some applications and devices that can't handle fast input and will skip letters if too many keys are sent in a small time frame.  
 
 ## NimBLE-Mode
@@ -137,7 +137,7 @@ Flash: [====      ]  44.2% (used 579158 bytes from 1310720 bytes)
 ArduinoIDE: Before including the library, insert the line `#define USE_NIMBLE`
 ```C++
 #define USE_NIMBLE
-#include <BleKeyboard.h>
+#include <BleCombo.h>
 ```
 
 PlatformIO: Change your `platformio.ini` to the following settings

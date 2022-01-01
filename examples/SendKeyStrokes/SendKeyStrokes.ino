@@ -1,39 +1,39 @@
 /**
  * This example turns the ESP32 into a Bluetooth LE keyboard that writes the words, presses Enter, presses a media key and then Ctrl+Alt+Delete
  */
-#include <BleKeyboard.h>
+#include <BleCombo.h>
 
-BleKeyboard bleKeyboard;
+BleCombo BleCombo;
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
-  bleKeyboard.begin();
+  BleCombo.begin();
 }
 
 void loop() {
-  if(bleKeyboard.isConnected()) {
+  if(BleCombo.isConnected()) {
     Serial.println("Sending 'Hello world'...");
-    bleKeyboard.print("Hello world");
+    BleCombo.print("Hello world");
 
     delay(1000);
 
     Serial.println("Sending Enter key...");
-    bleKeyboard.write(KEY_RETURN);
+    BleCombo.write(KEY_RETURN);
 
     delay(1000);
 
     Serial.println("Sending Play/Pause media key...");
-    bleKeyboard.write(KEY_MEDIA_PLAY_PAUSE);
+    BleCombo.write(KEY_MEDIA_PLAY_PAUSE);
 
     delay(1000);
 
     Serial.println("Sending Ctrl+Alt+Delete...");
-    bleKeyboard.press(KEY_LEFT_CTRL);
-    bleKeyboard.press(KEY_LEFT_ALT);
-    bleKeyboard.press(KEY_DELETE);
+    BleCombo.press(KEY_LEFT_CTRL);
+    BleCombo.press(KEY_LEFT_ALT);
+    BleCombo.press(KEY_DELETE);
     delay(100);
-    bleKeyboard.releaseAll();
+    BleCombo.releaseAll();
   }
 
   Serial.println("Waiting 5 seconds...");
