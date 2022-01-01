@@ -153,8 +153,10 @@ void BleCombo::begin(void)
   outputKeyboard = hid->outputReport(KEYBOARD_ID);
   inputMediaKeys = hid->inputReport(MEDIA_KEYS_ID);
   inputMouse = hid->inputReport(MOUSE_ID);
+  outputMouse = hid->outputReport(MOUSE_ID);
 
   outputKeyboard->setCallbacks(this);
+  outputMouse->setCallbacks(this);
 
   hid->manufacturer()->setValue(deviceManufacturer);
 
