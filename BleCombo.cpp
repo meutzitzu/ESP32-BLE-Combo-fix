@@ -135,8 +135,8 @@ static const uint8_t _hidReportDescriptor[] = {
 };
 
 BleCombo::BleCombo(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel)
-    : hid(0)
-		, _mouseButtons(0)
+    : _mouseButtons(0)
+		, hid(0)
     , deviceName(std::string(deviceName).substr(0, 15))
     , deviceManufacturer(std::string(deviceManufacturer).substr(0,15))
     , batteryLevel(batteryLevel) {}
@@ -543,9 +543,9 @@ size_t BleCombo::write(const uint8_t *buffer, size_t size) {
 void BleCombo::mouseClick(uint8_t b)
 {
   _mouseButtons = b;
-  move(0, 0, 0, 0);
+  mouseMove(0, 0, 0, 0);
   _mouseButtons = 0;
-  move(0, 0, 0, 0);
+  mouseMove(0, 0, 0, 0);
 }
 
 void BleCombo::mouseMove(signed char x, signed char y, signed char wheel, signed char hWheel)
@@ -568,7 +568,7 @@ void BleCombo::mouseButtons(uint8_t b)
   if (b != _mouseButtons)
 	{
     _mouseButtons = b;
-    move(0, 0, 0, 0);
+    mouseMove(0, 0, 0, 0);
   }
 }
 
