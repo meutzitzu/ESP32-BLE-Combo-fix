@@ -548,6 +548,8 @@ void BleCombo::onConnect(BLEServer* pServer) {
   desc->setNotifications(true);
   desc = (BLE2902*)this->inputMediaKeys->getDescriptorByUUID(BLEUUID((uint16_t)0x2902));
   desc->setNotifications(true);
+  desc = (BLE2902*)this->inputMouse->getDescriptorByUUID(BLEUUID((uint16_t)0x2902));
+  desc->setNotifications(true);
 
 #endif // !USE_NIMBLE
 
