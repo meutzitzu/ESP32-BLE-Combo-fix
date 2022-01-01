@@ -1,7 +1,8 @@
-# ESP32 BLE Keyboard library
+# ESP32 BLE Keyboard & Mouse Combo library
 
-This library allows you to make the ESP32 act as a Bluetooth Keyboard and control what it does.  
+This library allows you to make the ESP32 act as a Bluetooth Keyboard & Mouse Combo and control what it does.  
 You might also be interested in:
+- [ESP32-BLE-Keyboard](https://github.com/T-vK/ESP32-BLE-Keyboard)
 - [ESP32-BLE-Mouse](https://github.com/T-vK/ESP32-BLE-Mouse)
 - [ESP32-BLE-Gamepad](https://github.com/lemmingDev/ESP32-BLE-Gamepad)
 
@@ -66,6 +67,36 @@ void loop() {
     delay(100);
     BleCombo.releaseAll();
 
+    delay(1000);
+
+    Serial.println("Left click");
+    BleCombo.mouseClick(MOUSE_LEFT);
+    delay(500);
+
+    Serial.println("Right click");
+    BleCombo.mouseClick(MOUSE_RIGHT);
+    delay(500);
+
+    Serial.println("Scroll wheel click");
+    BleCombo.mouseClick(MOUSE_MIDDLE);
+    delay(500);
+
+    Serial.println("Back button click");
+    BleCombo.mouseClick(MOUSE_BACK);
+    delay(500);
+
+    Serial.println("Forward button click");
+    BleCombo.mouseClick(MOUSE_FORWARD);
+    delay(500);
+
+    Serial.println("Click left+right mouse button at the same time");
+    BleCombo.mouseClick(MOUSE_LEFT | MOUSE_RIGHT);
+    delay(500);
+
+    Serial.println("Click left+right mouse button and scroll wheel at the same time");
+    BleCombo.mouseClick(MOUSE_LEFT | MOUSE_RIGHT | MOUSE_MIDDLE);
+    delay(500);
+
   }
   Serial.println("Waiting 5 seconds...");
   delay(5000);
@@ -99,6 +130,11 @@ In addition to that you can send media keys (which is not possible with the USB 
 - KEY_MEDIA_WWW_BACK
 - KEY_MEDIA_CONSUMER_CONTROL_CONFIGURATION // Media Selection
 - KEY_MEDIA_EMAIL_READER
+
+The Mouse interface is almost identical to the Mouse Interface, with mouse- prefix and camelCase, so you can use documentation right here:
+https://www.arduino.cc/reference/en/language/functions/usb/mouse/
+
+Just remember that you have to use `mouseXxxXxx` instead of just `xxxXxx`
 
 There is also Bluetooth specific information that you can set (optional):
 Instead of `BleCombo BleCombo;` you can do `BleCombo BleCombo("Bluetooth Device Name", "Bluetooth Device Manufacturer", 100);`. (Max lenght is 15 characters, anything beyond that will be truncated.)  
