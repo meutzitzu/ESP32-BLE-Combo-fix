@@ -166,10 +166,10 @@ public:
   void sendReport(MediaKeyReport* keys);
   size_t press(uint8_t k);
   size_t press(const MediaKeyReport k);
-  void press(const MouseButton b = MOUSE_LEFT);
+  size_t press(const MouseButton b = MOUSE_LEFT);
   size_t release(uint8_t k);
   size_t release(const MediaKeyReport k);
-  void release(const MouseButton b = MOUSE_LEFT);
+  size_t release(const MouseButton b = MOUSE_LEFT);
   size_t write(uint8_t c);
   size_t write(const MediaKeyReport c);
   size_t write(const uint8_t *buffer, size_t size);

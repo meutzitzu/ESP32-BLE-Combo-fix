@@ -256,33 +256,7 @@ void BleCombo::sendReport(MediaKeyReport* keys)
   }	
 }
 
-extern
-const uint8_t _asciimap[128] PROGMEM;
-
-#define SHIFT 0x80
-const uint8_t _asciimap[128] =
-{
-	0x00,             // NUL
-	0x00,             // SOH
-	0x00,             // STX
-	0x00,             // ETX
-	0x00,             // EOT
-	0x00,             // ENQ
-	0x00,             // ACK
-	0x00,             // BEL
-	0x2a,			// BS	Backspace
-	0x2b,			// TAB	Tab
-	0x28,			// LF	Enter
-	0x00,             // VT
-	0x00,             // FF
-	0x00,             // CR
-	0x00,             // SO
-	0x00,             // SI
-	0x00,             // DEL
-	0x00,             // DC1
-	0x00,             // DC2
-	0x00,             // DC3
-	0x00,             // DC4
+extern 
 	0x00,             // NAK
 	0x00,             // SYN
 	0x00,             // ETB
@@ -454,8 +428,9 @@ size_t BleCombo::press(const MediaKeyReport k)
 	return 1;
 }
 
-void BleCombo::press(const MouseButton b) {
+size_t BleCombo::press(const MouseButton b) {
   buttons(_buttons | b);
+	return 1;
 }
 
 // release() takes the specified key out of the persistent key report and
@@ -504,8 +479,9 @@ size_t BleCombo::release(const MediaKeyReport k)
 	return 1;
 }
 
-void BleCombo::release(const MouseButton b) {
+size_t BleCombo::release(const MouseButton b) {
   buttons(_buttons & ~b);
+  return 1;
 }
 
 void BleCombo::releaseAll(void)
@@ -555,10 +531,8 @@ size_t BleCombo::write(const uint8_t *buffer, size_t size) {
 
 void BleCombo::click(const MouseButton b)
 {
-  _buttons = b;
-  move(0, 0, 0, 0);
-  _buttons = 0;
-  move(0, 0, 0, 0);
+  buttons(_buttons | b);
+  buttons(_buttons & ~b);
 }
 
 void BleCombo::move(signed char x, signed char y, signed char wheel, signed char hWheel)
@@ -573,6 +547,10 @@ void BleCombo::move(signed char x, signed char y, signed char wheel, signed char
     m[4] = hWheel;
     this->inputMouse->setValue(m, 5);
     this->inputMouse->notify();
+#if defined(USE_NIMBLE)
+    // vTaskDelay(delayTicks);
+    this->delay_ms(_delay_ms);
+#endif  // USE_NIMBLE
   }
 }
 
