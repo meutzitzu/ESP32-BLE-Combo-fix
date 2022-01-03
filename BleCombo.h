@@ -178,7 +178,7 @@ public:
   void setBatteryLevel(uint8_t level);
   void setName(std::string deviceName);  
   void setDelay(uint32_t ms);
-  void click(uint8_t b = MOUSE_LEFT);
+  void click(const MouseButton b = MOUSE_LEFT);
   void move(signed char x, signed char y, signed char wheel = 0, signed char hWheel = 0);
   bool isPressed(const MouseButton b = MOUSE_LEFT);  // check LEFT by default
 

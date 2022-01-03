@@ -553,7 +553,7 @@ size_t BleCombo::write(const uint8_t *buffer, size_t size) {
 	return n;
 }
 
-void BleCombo::click(uint8_t b)
+void BleCombo::click(const MouseButton b)
 {
   _buttons = b;
   move(0, 0, 0, 0);
