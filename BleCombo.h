@@ -166,10 +166,10 @@ public:
   void sendReport(MediaKeyReport* keys);
   size_t press(uint8_t k);
   size_t press(const MediaKeyReport k);
-  void press(const MouseButton b = MOUSE_LEFT);  // press LEFT by default
+  void press(const MouseButton b);
   size_t release(uint8_t k);
   size_t release(const MediaKeyReport k);
-  void mouseRelease(const MouseButton b = MOUSE_LEFT);  // release LEFT by default
+  void mouseRelease(const MouseButton b);
   size_t write(uint8_t c);
   size_t write(const MediaKeyReport c);
   size_t write(const uint8_t *buffer, size_t size);
@@ -178,9 +178,9 @@ public:
   void setBatteryLevel(uint8_t level);
   void setName(std::string deviceName);  
   void setDelay(uint32_t ms);
-  void click(const MouseButton b = MOUSE_LEFT);
+  void click(const MouseButton b);
   void move(signed char x, signed char y, signed char wheel = 0, signed char hWheel = 0);
-  bool isPressed(const MouseButton b = MOUSE_LEFT);  // check LEFT by default
+  bool isPressed(const MouseButton b);
 
   void set_vendor_id(uint16_t vid);
   void set_product_id(uint16_t pid);
