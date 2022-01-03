@@ -152,7 +152,7 @@ private:
   bool               connected = false;
   uint32_t           _delay_ms = 7;
   void delay_ms(uint64_t ms);
-  void buttons(uint8_t b);
+  void buttons(const MouseButton b);
 
   uint16_t vid       = 0x05ac;
   uint16_t pid       = 0x820a;
