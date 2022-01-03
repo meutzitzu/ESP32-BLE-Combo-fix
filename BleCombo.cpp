@@ -257,6 +257,32 @@ void BleCombo::sendReport(MediaKeyReport* keys)
 }
 
 extern 
+const uint8_t _asciimap[128] PROGMEM;
+
+#define SHIFT 0x80
+const uint8_t _asciimap[128] =
+{
+	0x00,             // NUL
+	0x00,             // SOH
+	0x00,             // STX
+	0x00,             // ETX
+	0x00,             // EOT
+	0x00,             // ENQ
+	0x00,             // ACK
+	0x00,             // BEL
+	0x2a,			// BS	Backspace
+	0x2b,			// TAB	Tab
+	0x28,			// LF	Enter
+	0x00,             // VT
+	0x00,             // FF
+	0x00,             // CR
+	0x00,             // SO
+	0x00,             // SI
+	0x00,             // DEL
+	0x00,             // DC1
+	0x00,             // DC2
+	0x00,             // DC3
+	0x00,             // DC4
 	0x00,             // NAK
 	0x00,             // SYN
 	0x00,             // ETB
