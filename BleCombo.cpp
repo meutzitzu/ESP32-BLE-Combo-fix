@@ -136,7 +136,7 @@ static const uint8_t _hidReportDescriptor[] = {
 };
 
 BleCombo::BleCombo(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel)
-    : _mouseButtons(0)
+    : _buttons(0)
 		, hid(0)
     , deviceName(std::string(deviceName).substr(0, 15))
     , deviceManufacturer(std::string(deviceManufacturer).substr(0,15))
@@ -454,6 +454,10 @@ size_t BleCombo::press(const MediaKeyReport k)
 	return 1;
 }
 
+void BleCombo::press(const MouseButton b) {
+  buttons(_buttons | b);
+}
+
 // release() takes the specified key out of the persistent key report and
 // sends the report.  This tells the OS the key is no longer pressed and that
 // it shouldn't be repeated any more.
@@ -500,6 +504,10 @@ size_t BleCombo::release(const MediaKeyReport k)
 	return 1;
 }
 
+void BleCombo::release(const MouseButton b) {
+  buttons(_buttons & ~b);
+}
+
 void BleCombo::releaseAll(void)
 {
 	_keyReport.keys[0] = 0;
@@ -512,6 +520,8 @@ void BleCombo::releaseAll(void)
     _mediaKeyReport[0] = 0;
     _mediaKeyReport[1] = 0;
 	sendReport(&_keyReport);
+
+  buttons(0);
 }
 
 size_t BleCombo::write(uint8_t c)
@@ -543,20 +553,20 @@ size_t BleCombo::write(const uint8_t *buffer, size_t size) {
 	return n;
 }
 
-void BleCombo::mouseClick(uint8_t b)
+void BleCombo::click(uint8_t b)
 {
-  _mouseButtons = b;
-  mouseMove(0, 0, 0, 0);
-  _mouseButtons = 0;
-  mouseMove(0, 0, 0, 0);
+  _buttons = b;
+  move(0, 0, 0, 0);
+  _buttons = 0;
+  move(0, 0, 0, 0);
 }
 
-void BleCombo::mouseMove(signed char x, signed char y, signed char wheel, signed char hWheel)
+void BleCombo::move(signed char x, signed char y, signed char wheel, signed char hWheel)
 {
   if (this->isConnected())
 	{
     uint8_t m[5];
-    m[0] = _mouseButtons;
+    m[0] = _buttons;
     m[1] = x;
     m[2] = y;
     m[3] = wheel;
@@ -566,28 +576,18 @@ void BleCombo::mouseMove(signed char x, signed char y, signed char wheel, signed
   }
 }
 
-void BleCombo::mouseButtons(uint8_t b)
+void BleCombo::buttons(const MouseButton b)
 {
-  if (b != _mouseButtons)
+  if (b != _buttons)
 	{
-    _mouseButtons = b;
-    mouseMove(0, 0, 0, 0);
+    _buttons = b;
+    move(0, 0, 0, 0);
   }
 }
 
-void BleCombo::mousePress(uint8_t b)
+bool BleCombo::isPressed(const MouseButton b)
 {
-  mouseButtons(_mouseButtons | b);
-}
-
-void BleCombo::mouseRelease(uint8_t b)
-{
-  mouseButtons(_mouseButtons & ~b);
-}
-
-bool BleCombo::mouseIsPressed(uint8_t b)
-{
-  if ((b & _mouseButtons) > 0)
+  if ((b & _buttons) > 0)
     return true;
   return false;
 }
