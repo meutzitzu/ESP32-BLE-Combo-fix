@@ -116,7 +116,7 @@ const MediaKeyReport KEY_MEDIA_WWW_BACK = {0, 32};
 const MediaKeyReport KEY_MEDIA_CONSUMER_CONTROL_CONFIGURATION = {0, 64}; // Media Selection
 const MediaKeyReport KEY_MEDIA_EMAIL_READER = {0, 128};
 
-typedef uint8_t MouseButton;
+typedef uint16_t MouseButton;
 
 const MouseButton MOUSE_LEFT = 1;
 const MouseButton MOUSE_RIGHT = 2;
