@@ -70,31 +70,31 @@ void loop() {
     delay(1000);
 
     Serial.println("Left click");
-    bleCombo.mouseClick(MOUSE_LEFT);
+    bleCombo.click(MOUSE_LEFT);
     delay(500);
 
     Serial.println("Right click");
-    bleCombo.mouseClick(MOUSE_RIGHT);
+    bleCombo.click(MOUSE_RIGHT);
     delay(500);
 
     Serial.println("Scroll wheel click");
-    bleCombo.mouseClick(MOUSE_MIDDLE);
+    bleCombo.click(MOUSE_MIDDLE);
     delay(500);
 
     Serial.println("Back button click");
-    bleCombo.mouseClick(MOUSE_BACK);
+    bleCombo.click(MOUSE_BACK);
     delay(500);
 
     Serial.println("Forward button click");
-    bleCombo.mouseClick(MOUSE_FORWARD);
+    bleCombo.click(MOUSE_FORWARD);
     delay(500);
 
     Serial.println("Click left+right mouse button at the same time");
-    bleCombo.mouseClick(MOUSE_LEFT | MOUSE_RIGHT);
+    bleCombo.click(MOUSE_LEFT | MOUSE_RIGHT);
     delay(500);
 
     Serial.println("Click left+right mouse button and scroll wheel at the same time");
-    bleCombo.mouseClick(MOUSE_LEFT | MOUSE_RIGHT | MOUSE_MIDDLE);
+    bleCombo.click(MOUSE_LEFT | MOUSE_RIGHT | MOUSE_MIDDLE);
     delay(500);
 
   }
@@ -104,10 +104,11 @@ void loop() {
 ```
 
 ## API docs
-The BleCombo interface is almost identical to the Keyboard Interface, so you can use documentation right here:
+The BleCombo interface is almost identical to the Arduino Keyboard and Mouse Interface, so you can use documentation right here:
 https://www.arduino.cc/reference/en/language/functions/usb/keyboard/
+https://www.arduino.cc/reference/en/language/functions/usb/mouse/
 
-Just remember that you have to use `BleCombo` instead of just `Keyboard` and you need these two lines at the top of your script:
+Just remember that you have to use `bleCombo` instead of just `Keyboard` or `Mouse` and you need these two lines at the top of your script:
 ```
 #include <BleCombo.h>
 BleCombo bleCombo;
@@ -131,15 +132,10 @@ In addition to that you can send media keys (which is not possible with the USB 
 - KEY_MEDIA_CONSUMER_CONTROL_CONFIGURATION // Media Selection
 - KEY_MEDIA_EMAIL_READER
 
-The Mouse interface is almost identical to the Mouse Interface, with mouse- prefix and camelCase, so you can use documentation right here:
-https://www.arduino.cc/reference/en/language/functions/usb/mouse/
-
-Just remember that you have to use `mouseXxxXxx` instead of just `xxxXxx`
-
 There is also Bluetooth specific information that you can set (optional):
 Instead of `BleCombo bleCombo;` you can do `BleCombo bleCombo("Bluetooth Device Name", "Bluetooth Device Manufacturer", 100);`. (Max lenght is 15 characters, anything beyond that will be truncated.)  
 The third parameter is the initial battery level of your device. To adjust the battery level later on you can simply call e.g.  `bleCombo.setBatteryLevel(50)` (set battery level to 50%).  
-By default the battery level will be set to 100%, the device name will be `ESP32 Bluetooth Keyboard` and the manufacturer will be `Espressif`.  
+By default the battery level will be set to 100%, the device name will be `ESP32 Combo HID` and the manufacturer will be `Espressif`.  
 There is also a `setDelay` method to set a delay between each key event. E.g. `bleCombo.setDelay(10)` (10 milliseconds). The default is `8`.  
 This feature is meant to compensate for some applications and devices that can't handle fast input and will skip letters if too many keys are sent in a small time frame.  
 

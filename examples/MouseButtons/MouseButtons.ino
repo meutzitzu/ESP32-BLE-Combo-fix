@@ -14,31 +14,31 @@ void setup() {
 void loop() {
   if(bleCombo.isConnected()) {
     Serial.println("Left click");
-    bleCombo.mouseClick(MOUSE_LEFT);
+    bleCombo.click(MOUSE_LEFT);
     delay(500);
 
     Serial.println("Right click");
-    bleCombo.mouseClick(MOUSE_RIGHT);
+    bleCombo.click(MOUSE_RIGHT);
     delay(500);
 
     Serial.println("Scroll wheel click");
-    bleCombo.mouseClick(MOUSE_MIDDLE);
+    bleCombo.click(MOUSE_MIDDLE);
     delay(500);
 
     Serial.println("Back button click");
-    bleCombo.mouseClick(MOUSE_BACK);
+    bleCombo.click(MOUSE_BACK);
     delay(500);
 
     Serial.println("Forward button click");
-    bleCombo.mouseClick(MOUSE_FORWARD);
+    bleCombo.click(MOUSE_FORWARD);
     delay(500);
 
     Serial.println("Click left+right mouse button at the same time");
-    bleCombo.mouseClick(MOUSE_LEFT | MOUSE_RIGHT);
+    bleCombo.click(MOUSE_LEFT | MOUSE_RIGHT);
     delay(500);
 
     Serial.println("Click left+right mouse button and scroll wheel at the same time");
-    bleCombo.mouseClick(MOUSE_LEFT | MOUSE_RIGHT | MOUSE_MIDDLE);
+    bleCombo.click(MOUSE_LEFT | MOUSE_RIGHT | MOUSE_MIDDLE);
     delay(500);
 
   }
